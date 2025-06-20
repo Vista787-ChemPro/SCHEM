@@ -29,7 +29,7 @@ U = st.number_input("Overall heat transfer coefficient U (W/m²·K)", min_value=
 flow_type = st.selectbox("Flow configuration", ["Counter-flow", "Parallel-flow"])
 
 # Validation of input parameters
-Valid_temp = True
+valid_temp = True
 if T_hot_in <= T_hot_out:
     st.error("Hot fluid outlet temperature must be less than inlet temperature.")
     valid_temp = False
