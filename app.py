@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 st.set_page_config(page_title="Heat Exchanger Calculator", layout="centered")
-st.title("🔧 Heat Exchanger Input Calculator")
+st.title("Heat Exchanger Input Calculator")
 st.markdown("""
 This tool calculates heat duty, log mean temperature difference (LMTD), and required heat exchanger area.
 Supports **counter-flow** and **parallel-flow** exchangers.
