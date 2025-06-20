@@ -14,22 +14,24 @@ st.header("Input Parameters")
 col1, col2 = st.columns(2)
 
 with col1:
-    m_dot_hot = st.number_input("Hot fluid mass flow rate (kg/s)", min_value=0.0, value=1.0)
-    Cp_hot = st.number_input("Hot fluid specific heat (kJ/kg·K)", min_value=0.0, value=4.18)
-    T_hot_in = st.number_input("Hot fluid inlet temp (°C)", value=80.0)
-    T_hot_out_known = st.checkbox("Input hot fluid outlet temp?")
+    st.subheader("Hot Fluid")
+    m_dot_hot = st.number_input("Mass flow rate (kg/s)", min_value=0.0, value=1.0)
+    Cp_hot = st.number_input("Specific heat (kJ/kg·K)", min_value=0.0, value=4.18)
+    T_hot_in = st.number_input("Inlet temperature (°C)", value=80.0)
+    T_hot_out_known = st.checkbox("Input outlet temperature?")
     if T_hot_out_known:
-        T_hot_out = st.number_input("Hot fluid outlet temp (°C)", value=50.0)
+        T_hot_out = st.number_input("Outlet temperature (°C)", value=50.0)
     else:
         T_hot_out = None
 
 with col2:
-    m_dot_cold = st.number_input("Cold fluid mass flow rate (kg/s)", min_value=0.0, value=1.0)
-    Cp_cold = st.number_input("Cold fluid specific heat (kJ/kg·K)", min_value=0.0, value=4.18)
-    T_cold_in = st.number_input("Cold fluid inlet temp (°C)", value=20.0)
-    T_cold_out_known = st.checkbox("Input cold fluid outlet temp?")
+    st.subheader("Cold Fluid")
+    m_dot_cold = st.number_input("Mass flow rate (kg/s)", min_value=0.0, value=1.0)
+    Cp_cold = st.number_input("Specific heat (kJ/kg·K)", min_value=0.0, value=4.18)
+    T_cold_in = st.number_input("Inlet temperature (°C)", value=20.0)
+    T_cold_out_known = st.checkbox("Input outlet temperature?")
     if T_cold_out_known:
-        T_cold_out = st.number_input("Cold fluid outlet temp (°C)", value=45.0)
+        T_cold_out = st.number_input("Outlet temperature (°C)", value=45.0)
     else:
         T_cold_out = None
 
