@@ -36,7 +36,7 @@ if T_hot_in <= T_hot_out:
 if T_cold_out <= T_cold_in:
     st.error("Cold fluid outlet temperature must be greater than inlet temperature.")
     valid_temp = False
-if valid_temps:
+if valid_temp:
     Q_hot = m_dot_hot * Cp_hot * (T_hot_in - T_hot_out) * 1000 # Heat duty(Q), Watts
     Q_cold = m_dot_cold * Cp_cold * (T_cold_out - T_cold_in) * 1000 # Watts
     Q = min(Q_hot, Q_cold)
