@@ -30,10 +30,10 @@ flow_type = st.selectbox("Flow configuration", ["Counter-flow", "Parallel-flow"]
 
 # Validation of input parameters
 Valid_temp = True
-if T_hot_inlet <= T_hot_outlet:
+if T_hot_in <= T_hot_out:
     st.error("Hot fluid outlet temperature must be less than inlet temperature.")
     valid_temp = False
-if T_cold_outlet <= T_cold_inlet:
+if T_cold_out <= T_cold_in:
     st.error("Cold fluid outlet temperature must be greater than inlet temperature.")
     valid_temp = False
 if valid_temps:
