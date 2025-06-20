@@ -1,5 +1,7 @@
 import streamlit as st
 import math
+import matplotlib.pyplot as plt
+import numpy as np
 
 st.set_page_config(page_title="Heat Exchanger Calculator", layout="centered")
 st.title("Heat Exchanger Input Calculator")
@@ -26,15 +28,15 @@ with col2:
 U = st.number_input("Overall heat transfer coefficient U (W/m²·K)", min_value=1.0, value=500.0)
 flow_type = st.selectbox("Flow configuration", ["Counter-flow", "Parallel-flow"])
 
-Q_hot = m_dot_hot * Cp_hot * (T_hot_in - T_hot_out) * 1000
-Q_cold = m_dot_cold * Cp_cold * (T_cold_out - T_cold_in) * 1000
+Q_hot = m_dot_hot * Cp_hot * (T_hot_in - T_hot_out) * 1000 # Heat duty(Q), Watts
+Q_cold = m_dot_cold * Cp_cold * (T_cold_out - T_cold_in) * 1000 # Watts
 Q = min(Q_hot, Q_cold)
 
-if flow_type == "Counter-flow":
+if flow_type == "Counter-flow": #LMTD 
     delta_T1 = T_hot_in - T_cold_out
     delta_T2 = T_hot_out - T_cold_in
-else:
-    delta_T1 = T_hot_in - T_cold_in
+else: # Parallel Flow
+    delta_T1 = T_hot_in - T_cold_in   
     delta_T2 = T_hot_out - T_cold_out
 
 if delta_T1 == delta_T2:
@@ -54,4 +56,30 @@ st.header("Results")
 st.metric("Heat Duty (Q)", f"{Q/1000:.2f} kW")
 st.metric("LMTD", f"{LMTD:.2f} °C")
 st.metric("Required Area", f"{A:.2f} m²")
+with st.expander("Assumptions Used"):
+    st.markdown("""
+    - Fluids are assumed to be well mixed and properties such as Cp and density are constant. 
+    - No Phase change occurs for hot or cold streams.
+    - Heat Losses to surroundings i.e through exchanger wall is negligible.
+    - Flow is steady-state and 1D.
+    - Linear temperature gradients are used for plotting. 
+    """)
+# Temperature profile plot
+st.subheader("Temperature Profile")
+x = np.linspace(0, 1, 100)
+if flow_type == "Counter-flow":
+    T_hot = T_hot_in - (T_hot_in - T_hot_out) * x
+    T_cold = T_cold_out - (T_cold_out - T_cold_in) * (1 - x)
+else:
+    T_hot = T_hot_in - (T_hot_in - T_hot_out) * x
+    T_cold = T_cold_in + (T_cold_out - T_cold_in) * x
+
+figure, axes = plt.subplots()
+axes.plot(x, T_hot, label='Hot Fluid')
+axes.plot(x, T_cold, label='Cold Fluid')
+axes.set_xlabel('Heat Exchanger Length (normalized)')
+axes.set_ylabel('Temperature (°C)')
+axes.set_title(f"{flow_type} Temperature Profile")
+axes.legend()
+st.pyplot(figure)
 st.caption("Built by Renuja Perera with Streamlit")
