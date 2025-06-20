@@ -7,36 +7,36 @@ st.set_page_config(page_title="Heat Exchanger Calculator", layout="centered")
 st.title("Heat Exchanger Input Calculator")
 st.markdown("""
 This tool calculates heat duty, log mean temperature difference (LMTD), and required heat exchanger area.
-Supports **counter-flow** and **parallel-flow** exchangers.
+Supports counter-flow and parallel-flow exchangers.
 """)
 
 st.header("Input Parameters")
 col1, col2 = st.columns(2)
 
-# Hot Fluid Inputs
+# Hot Fluid Section
 with col1:
     st.subheader("Hot Fluid")
-    m_dot_hot = st.number_input("Mass flow rate (kg/s)", min_value=0.0, value=1.0)
-    Cp_hot = st.number_input("Specific heat (kJ/kg·K)", min_value=0.0, value=4.18)
-    T_hot_in = st.number_input("Inlet temperature (°C)", value=80.0)
-    T_hot_out_known = st.checkbox("Input outlet temperature?", value=True)
-    T_hot_out = st.number_input("Outlet temperature (°C)", value=50.0) if T_hot_out_known else None
+    m_dot_hot = st.number_input("Hot mass flow rate (kg/s)", min_value=0.0, value=1.0)
+    Cp_hot = st.number_input("Hot specific heat (kJ/kg·K)", min_value=0.0, value=4.18)
+    T_hot_in = st.number_input("Hot inlet temperature (°C)", value=80.0)
+    T_hot_out_known = st.checkbox("Input hot outlet temperature?", value=True)
+    T_hot_out = st.number_input("Hot outlet temperature (°C)", value=50.0) if T_hot_out_known else None
 
-# Cold Fluid Inputs
+# Cold Fluid Section
 with col2:
     st.subheader("Cold Fluid")
-    m_dot_cold = st.number_input("Mass flow rate (kg/s)", min_value=0.0, value=1.0)
-    Cp_cold = st.number_input("Specific heat (kJ/kg·K)", min_value=0.0, value=4.18)
-    T_cold_in = st.number_input("Inlet temperature (°C)", value=20.0)
-    T_cold_out_known = st.checkbox("Input outlet temperature?", value=False)
-    T_cold_out = st.number_input("Outlet temperature (°C)", value=45.0) if T_cold_out_known else None
+    m_dot_cold = st.number_input("Cold mass flow rate (kg/s)", min_value=0.0, value=1.0)
+    Cp_cold = st.number_input("Cold specific heat (kJ/kg·K)", min_value=0.0, value=4.18)
+    T_cold_in = st.number_input("Cold inlet temperature (°C)", value=20.0)
+    T_cold_out_known = st.checkbox("Input cold outlet temperature?", value=False)
+    T_cold_out = st.number_input("Cold outlet temperature (°C)", value=45.0) if T_cold_out_known else None
 
 U = st.number_input("Overall heat transfer coefficient U (W/m²·K)", min_value=1.0, value=500.0)
 flow_type = st.selectbox("Flow configuration", ["Counter-flow", "Parallel-flow"])
 
-
+# Calculation
 Q = None
-T_hot_out_calc, T_cold_out_calc = None, None
+T_hot_out_calc = T_cold_out_calc = None
 
 if T_hot_out_known and T_cold_out_known:
     Q_hot = m_dot_hot * Cp_hot * (T_hot_in - T_hot_out) * 1000
@@ -59,17 +59,16 @@ if Q is not None:
         T_cold_out = T_cold_out_calc
         st.info(f"Calculated cold outlet temperature: {T_cold_out:.2f} °C")
 
-    # Validation of Input
+    # Validation
     valid = True
     if T_hot_out >= T_hot_in:
-        st.error("Hot outlet temperature must be less than inlet.")
+        st.error("Hot outlet temperature must be less than inlet temperature.")
         valid = False
     if T_cold_out <= T_cold_in:
-        st.error("Cold outlet temperature must be greater than inlet.")
+        st.error("Cold outlet temperature must be greater than inlet temperature.")
         valid = False
 
     if valid:
-        # Heat Duty and LMTD
         Q_hot = m_dot_hot * Cp_hot * (T_hot_in - T_hot_out) * 1000
         Q_cold = m_dot_cold * Cp_cold * (T_cold_out - T_cold_in) * 1000
         Q = min(Q_hot, Q_cold)
@@ -83,7 +82,7 @@ if Q is not None:
 
         if delta_T1 <= 0 or delta_T2 <= 0:
             LMTD = float('nan')
-            st.error("LMTD failed: temp differences are invalid (<= 0).")
+            st.error("Temperature differences for LMTD are invalid (<= 0).")
         elif delta_T1 == delta_T2:
             LMTD = delta_T1
         else:
@@ -95,13 +94,12 @@ if Q is not None:
 
         A = Q / (U * LMTD) if U > 0 and not math.isnan(LMTD) else float('nan')
 
-        # Results Display
         st.header("Results")
         st.metric("Heat Duty (Q)", f"{Q / 1000:.2f} kW")
         st.metric("LMTD", f"{LMTD:.2f} °C")
         st.metric("Required Area", f"{A:.2f} m²")
 
-        # Temperature Profile Plot
+        # Temperature profile
         st.subheader("Temperature Profile")
         x = np.linspace(0, 1, 100)
         if flow_type == "Counter-flow":
@@ -112,8 +110,8 @@ if Q is not None:
             T_cold = T_cold_in + (T_cold_out - T_cold_in) * x
 
         fig, ax = plt.subplots()
-        ax.plot(x, T_hot, label='Hot Fluid', linewidth=2)
-        ax.plot(x, T_cold, label='Cold Fluid', linewidth=2, linestyle='--')
+        ax.plot(x, T_hot, label="Hot Fluid", linewidth=2)
+        ax.plot(x, T_cold, label="Cold Fluid", linewidth=2, linestyle='--')
         ax.set_xlabel("Heat Exchanger Length (normalized)")
         ax.set_ylabel("Temperature (°C)")
         ax.set_title(f"{flow_type} Temperature Profile")
@@ -121,14 +119,13 @@ if Q is not None:
         ax.legend()
         st.pyplot(fig)
 
-# Assumptions Used for Calculator
 with st.expander("Assumptions Used"):
     st.markdown("""
     - Fluids are well mixed and properties (Cp, density) are constant.
     - No phase change occurs in either stream.
     - Heat losses to the environment are negligible.
-    - Flow is steady-state and 1D.
-    - For plotting, linear temperature gradients are assumed.
+    - Flow is steady-state and one-dimensional.
+    - Linear temperature gradients are assumed for visualization.
     """)
 
-st.caption("Built by Renuja Perera with Streamlit 💻")
+st.caption("Built by Renuja Perera with Streamlit")
