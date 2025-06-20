@@ -2,13 +2,13 @@ import streamlit as st
 import math
 
 st.set_page_config(page_title="Heat Exchanger Calculator", layout="centered")
-st.title("🔧 Heat Exchanger Input Calculator")
+st.title("Heat Exchanger Input Calculator")
 st.markdown("""
 This tool calculates heat duty, log mean temperature difference (LMTD), and required heat exchanger area.
 Supports **counter-flow** and **parallel-flow** exchangers.
 """)
 
-st.header("🔢 Input Parameters")
+st.header("Input Parameters")
 col1, col2 = st.columns(2)
 
 with col1:
@@ -50,9 +50,8 @@ if U > 0 and not math.isnan(LMTD):
 else:
     A = float('nan')
 
-st.header("📊 Results")
+st.header("Results")
 st.metric("Heat Duty (Q)", f"{Q/1000:.2f} kW")
 st.metric("LMTD", f"{LMTD:.2f} °C")
 st.metric("Required Area", f"{A:.2f} m²")
-
-st.caption("Built by Renuja Perera with Streamlit 💻")
+st.caption("Built by Renuja Perera with Streamlit")
